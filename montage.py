@@ -1,3 +1,8 @@
+'''
+to simply achieve the feature of MATLAB montage function
+https://www.mathworks.com/help/images/ref/montage.html
+'''
+
 import matplotlib.pyplot as plt 
 from skimage.util import montage as m
 
