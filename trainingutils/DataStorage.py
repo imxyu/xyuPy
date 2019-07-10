@@ -591,9 +591,10 @@ class Multi_Silces_DataStorage_validation(Multi_Silces_DataStorage_training):
 
 
 class VolumeDataStorage(torch.utils.data.Dataset):
-    def __init__(self, path_raw, path_targets):
+    def __init__(self, path_raw, path_targets, is_half):
         self.path_raw = path_raw
         self.path_targets = path_targets
+        self.is_half = is_half
         self.filenames = os.listdir(self.path_raw)
         self.raw = [np.load(os.path.join(self.path_raw, name)) for name in self.filenames]
         self.target = [np.load(os.path.join(self.path_targets, name)) for name in self.filenames]
@@ -608,13 +609,17 @@ class VolumeDataStorage(torch.utils.data.Dataset):
         raw = torch.tensor(raw).unsqueeze(0).float() / 255.
         target = torch.tensor(target).long()
         # print(target.unique())
-        return raw, target    
+        if self.is_half:
+            return raw.half(), target
+        else:
+            return raw, target
 
 
 class VolumeDataStorage_from_disk(torch.utils.data.Dataset):
-    def __init__(self, path_raw, path_targets):
+    def __init__(self, path_raw, path_targets, is_half=False):
         self.path_raw = path_raw
         self.path_targets = path_targets
+        self.is_half = is_half
         self.filenames = os.listdir(self.path_raw)
         
     def __len__(self):
@@ -627,8 +632,10 @@ class VolumeDataStorage_from_disk(torch.utils.data.Dataset):
         raw = torch.tensor(raw).unsqueeze(0).float() / 255.
         target = torch.tensor(target).long()
         # print(target.unique())
-        return raw, target    
-
+        if self.is_half:
+            return raw.half(), target
+        else:
+            return raw, target
 
 class LITS_Random_WL_DICOM_DataStorage_training(DataStorage_training):
     def __init__(self, path_raw, path_targets, norm = False): # best for HCC tumor
